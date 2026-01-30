@@ -1,24 +1,42 @@
-import { ThemedText } from "@/components/themed-text";
-import { FlatList, View } from "react-native";
+import { FlatList, Modal, View } from "react-native";
+import { Button } from "@/components/ui/button";
+import { Text } from "@/components/ui/text";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Checkbox } from "expo-checkbox";
-import { useState } from "react";
+import { useCallback, useState } from "react";
+import { Task } from "@/components/tasks-provider";
 
-interface Task {
-  title: string;
-  description: string;
-}
-
-const tasks: Task[] = [
-  { title: "Simple Task", description: "Simple task description" },
-  { title: "Simple Task 2", description: "Simple task description 2" },
-];
+import useTasks from "@/hooks/use-tasks";
+import { Input } from "@/components/ui/input";
 
 const today = new Date();
 const weekday = today.toLocaleDateString("en-US", { weekday: "long" });
 const month = today.toLocaleDateString("en-US", { month: "long" });
 
 export default function Index() {
+  const [tasks, setTasks] = useTasks();
+  const [open, setOpen] = useState(false);
+  const [currentTask, setCurrentTask] = useState({
+    title: "",
+    description: "",
+  });
+
+  const changeCurrentTask = useCallback(
+    (type: "title" | "description", val: string) => {
+      setCurrentTask((prev) => ({
+        ...prev,
+        [type]: val,
+      }));
+    },
+    [currentTask],
+  );
+
+  const addTask = useCallback(() => {
+    setOpen(false);
+
+    setTasks((prev) => [...prev, currentTask]);
+  }, [currentTask]);
+
   return (
     <SafeAreaView
       style={{
@@ -26,14 +44,61 @@ export default function Index() {
         marginTop: 36,
       }}
     >
-      <ThemedText type="title">Today</ThemedText>
-      <ThemedText type="defaultSemiBold" style={{ marginBottom: 16 }}>
+      <Text type="title">Today</Text>
+      <Text style={{ marginBottom: 16 }}>
         {month} {today.getDate()} - {weekday}
-      </ThemedText>
+      </Text>
       <FlatList
         data={tasks}
         renderItem={(task) => <TaskItem {...task} />}
       ></FlatList>
+      <Modal
+        visible={open}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setOpen(false)}
+      >
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: "#1e1e1e",
+              padding: 20,
+              width: 300,
+              borderRadius: 4,
+            }}
+          >
+            <Text style={{ marginBottom: 8 }} type="subtitle">
+              Add task
+            </Text>
+            <Input
+              onChangeText={(text) => changeCurrentTask("title", text)}
+              placeholder="Title..."
+            />
+            <Input
+              placeholder="Description..."
+              onChangeText={(text) => changeCurrentTask("title", text)}
+              style={{ marginVertical: 6 }}
+            />
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                gap: 4,
+              }}
+            >
+              <Button title="Close" onPress={() => setOpen(false)} />
+              <Button title="Add" onPress={addTask} />
+            </View>
+          </View>
+        </View>
+      </Modal>
+      <Button title="Add task" onPress={() => setOpen(true)} />
     </SafeAreaView>
   );
 }
@@ -71,8 +136,8 @@ function TaskItem({ item }: { item: Task }) {
         }}
       />
       <View>
-        <ThemedText type="defaultSemiBold">{item.title}</ThemedText>
-        <ThemedText style={{ color: "gray" }}>{item.description}</ThemedText>
+        <Text type="defaultSemiBold">{item.title}</Text>
+        <Text style={{ color: "gray" }}>{item.description}</Text>
       </View>
     </View>
   );
