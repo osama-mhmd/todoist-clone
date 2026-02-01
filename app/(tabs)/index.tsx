@@ -3,6 +3,7 @@ import {
   InteractionManager,
   Keyboard,
   Modal,
+  StyleSheet,
   TouchableWithoutFeedback,
   View,
 } from "react-native";
@@ -22,8 +23,81 @@ const weekday = today.toLocaleDateString("en-US", { weekday: "long" });
 const month = today.toLocaleDateString("en-US", { month: "long" });
 
 export default function Index() {
+  const [tasks] = useTasks();
+
+  return (
+    <SafeAreaView
+      style={{
+        padding: 30,
+        flex: 1,
+      }}
+    >
+      <Text type="title">Today</Text>
+      <Text style={{ marginBottom: 16 }}>
+        {month} {today.getDate()} - {weekday}
+      </Text>
+      <FlatList
+        data={tasks}
+        renderItem={(task) => <TaskItem {...task} />}
+      ></FlatList>
+      <AddTask />
+    </SafeAreaView>
+  );
+}
+
+function TaskItem({ item }: { item: Task }) {
+  const [checked, setChecked] = useState<boolean>(false);
+
+  const handleCheckboxPress = () => {
+    setChecked((prev) => {
+      return !prev;
+    });
+  };
+
+  return (
+    <View
+      style={{
+        paddingHorizontal: 4,
+        paddingBottom: 8,
+        borderStyle: "solid",
+        borderBottomWidth: 0.5,
+        borderColor: "#333",
+        marginBottom: 16,
+        display: "flex",
+        flexDirection: "row",
+        gap: 8,
+      }}
+    >
+      <Checkbox
+        value={checked}
+        onValueChange={handleCheckboxPress}
+        style={{
+          borderRadius: "50%",
+          padding: 6,
+          marginTop: 2,
+        }}
+      />
+      <View>
+        <Text
+          style={{
+            textDecorationLine: checked ? "line-through" : "none",
+            color: checked ? "gray" : "white",
+          }}
+          type="defaultSemiBold"
+        >
+          {item.title}
+        </Text>
+        <Text style={{ color: checked ? "#666" : "#eee" }}>
+          {item.description}
+        </Text>
+      </View>
+    </View>
+  );
+}
+
+function AddTask() {
+  const [_, setTasks] = useTasks();
   const input = useRef(null);
-  const [tasks, setTasks] = useTasks();
   const [open, setOpen] = useState(false);
   const [currentTask, setCurrentTask] = useState({
     title: "",
@@ -57,20 +131,7 @@ export default function Index() {
   }, [currentTask]);
 
   return (
-    <SafeAreaView
-      style={{
-        padding: 30,
-        flex: 1,
-      }}
-    >
-      <Text type="title">Today</Text>
-      <Text style={{ marginBottom: 16 }}>
-        {month} {today.getDate()} - {weekday}
-      </Text>
-      <FlatList
-        data={tasks}
-        renderItem={(task) => <TaskItem {...task} />}
-      ></FlatList>
+    <>
       <Modal
         visible={open}
         transparent
@@ -130,12 +191,7 @@ export default function Index() {
                 >
                   <View style={{ flex: 1 }}></View>
                   <Button
-                    style={{
-                      backgroundColor: "#DC4D3D",
-                      flex: 0,
-                      paddingHorizontal: 12,
-                      borderRadius: 9999,
-                    }}
+                    style={styles.addButton}
                     title={<FontAwesome size={18} name="arrow-up" />}
                     onPress={addTask}
                   />
@@ -147,69 +203,29 @@ export default function Index() {
       </Modal>
       <Button
         title="+"
-        style={{
-          position: "absolute",
-          borderRadius: 99,
-          paddingHorizontal: 24,
-          backgroundColor: "#DC4D3D",
-          bottom: 15,
-          right: 15,
-        }}
+        style={styles.createButton}
         textStyle={{
           fontSize: 30,
         }}
         onPress={() => setOpen(true)}
       />
-    </SafeAreaView>
+    </>
   );
 }
 
-function TaskItem({ item }: { item: Task }) {
-  const [checked, setChecked] = useState<boolean>(false);
-
-  const handleCheckboxPress = () => {
-    setChecked((prev) => {
-      return !prev;
-    });
-  };
-
-  return (
-    <View
-      style={{
-        paddingHorizontal: 4,
-        paddingBottom: 8,
-        borderStyle: "solid",
-        borderBottomWidth: 0.5,
-        borderColor: "#333",
-        marginBottom: 16,
-        display: "flex",
-        flexDirection: "row",
-        gap: 8,
-      }}
-    >
-      <Checkbox
-        value={checked}
-        onValueChange={handleCheckboxPress}
-        style={{
-          borderRadius: "50%",
-          padding: 6,
-          marginTop: 2,
-        }}
-      />
-      <View>
-        <Text
-          style={{
-            textDecorationLine: checked ? "line-through" : "none",
-            color: checked ? "gray" : "white",
-          }}
-          type="defaultSemiBold"
-        >
-          {item.title}
-        </Text>
-        <Text style={{ color: checked ? "#666" : "#eee" }}>
-          {item.description}
-        </Text>
-      </View>
-    </View>
-  );
-}
+const styles = StyleSheet.create({
+  createButton: {
+    position: "absolute",
+    borderRadius: 99,
+    paddingHorizontal: 24,
+    backgroundColor: "#DC4D3D",
+    bottom: 15,
+    right: 15,
+  },
+  addButton: {
+    backgroundColor: "#DC4D3D",
+    flex: 0,
+    paddingHorizontal: 12,
+    borderRadius: 9999,
+  },
+});
