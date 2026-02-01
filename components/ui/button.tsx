@@ -8,9 +8,10 @@ import {
   TextStyle,
 } from "react-native";
 
-interface ButtonProps extends BP {
+interface ButtonProps extends Omit<BP, "title"> {
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
+  title: React.ReactNode;
 }
 
 export function Button({ title, textStyle, onPress, style }: ButtonProps) {

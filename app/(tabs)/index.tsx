@@ -1,19 +1,21 @@
-import { FlatList, Modal, View } from "react-native";
+import { FlatList, InteractionManager, Modal, View } from "react-native";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Checkbox } from "expo-checkbox";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Task } from "@/components/tasks-provider";
 
 import useTasks from "@/hooks/use-tasks";
 import { Input } from "@/components/ui/input";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 
 const today = new Date();
 const weekday = today.toLocaleDateString("en-US", { weekday: "long" });
 const month = today.toLocaleDateString("en-US", { month: "long" });
 
 export default function Index() {
+  const input = useRef(null);
   const [tasks, setTasks] = useTasks();
   const [open, setOpen] = useState(false);
   const [currentTask, setCurrentTask] = useState({
@@ -30,6 +32,15 @@ export default function Index() {
     },
     [currentTask],
   );
+
+  const handleModalAppear = useCallback(() => {
+    setTimeout(() => {
+      if (!input.current) return;
+      const inputEl = input.current as unknown as HTMLInputElement;
+
+      inputEl.focus();
+    }, 100);
+  }, []);
 
   const addTask = useCallback(() => {
     setOpen(false);
@@ -57,43 +68,60 @@ export default function Index() {
         transparent
         animationType="fade"
         onRequestClose={() => setOpen(false)}
+        onShow={handleModalAppear}
       >
         <View
           style={{
             flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
+            justifyContent: "flex-end",
           }}
         >
           <View
             style={{
               backgroundColor: "#1e1e1e",
-              padding: 20,
-              width: 300,
+              paddingStart: 8,
+              paddingTop: 8,
               borderRadius: 4,
             }}
           >
-            <Text style={{ marginBottom: 8 }} type="subtitle">
-              Add task
-            </Text>
             <Input
               onChangeText={(text) => changeCurrentTask("title", text)}
               placeholder="Title..."
+              ref={input}
+              style={{
+                borderWidth: 0,
+                fontSize: 20,
+              }}
             />
             <Input
+              multiline
               placeholder="Description..."
-              onChangeText={(text) => changeCurrentTask("title", text)}
-              style={{ marginVertical: 6 }}
+              onChangeText={(text) => changeCurrentTask("description", text)}
+              style={{
+                borderWidth: 0,
+                marginTop: -12,
+              }}
             />
             <View
               style={{
                 display: "flex",
                 flexDirection: "row",
+                justifyContent: "space-between",
                 gap: 4,
+                padding: 8,
               }}
             >
-              <Button title="Close" onPress={() => setOpen(false)} />
-              <Button title="Add" onPress={addTask} />
+              <View style={{ flex: 1 }}></View>
+              <Button
+                style={{
+                  backgroundColor: "#DC4D3D",
+                  flex: 0,
+                  paddingHorizontal: 12,
+                  borderRadius: 9999,
+                }}
+                title={<FontAwesome size={18} name="arrow-up" />}
+                onPress={addTask}
+              />
             </View>
           </View>
         </View>
@@ -102,11 +130,11 @@ export default function Index() {
         title="+"
         style={{
           position: "absolute",
-          borderRadius: 9999999,
+          borderRadius: 99,
           paddingHorizontal: 24,
           backgroundColor: "#DC4D3D",
-          bottom: 30,
-          right: 30,
+          bottom: 15,
+          right: 15,
         }}
         textStyle={{
           fontSize: 30,
@@ -150,8 +178,18 @@ function TaskItem({ item }: { item: Task }) {
         }}
       />
       <View>
-        <Text type="defaultSemiBold">{item.title}</Text>
-        <Text style={{ color: "gray" }}>{item.description}</Text>
+        <Text
+          style={{
+            textDecorationLine: checked ? "line-through" : "none",
+            color: checked ? "gray" : "white",
+          }}
+          type="defaultSemiBold"
+        >
+          {item.title}
+        </Text>
+        <Text style={{ color: checked ? "#666" : "#eee" }}>
+          {item.description}
+        </Text>
       </View>
     </View>
   );

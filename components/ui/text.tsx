@@ -23,7 +23,7 @@ export function Text({
     color: "white",
   };
 
-  return <_Text style={[styles[type], style, _style]} {...rest} />;
+  return <_Text style={[styles[type], _style, style]} {...rest} />;
 }
 
 const styles = StyleSheet.create({

@@ -1,8 +1,10 @@
 import { StyleProp, TextInput, TextInputProps, TextStyle } from "react-native";
 
-interface InputProps extends TextInputProps {}
+interface InputProps extends TextInputProps {
+  ref?: React.Ref<TextInput>;
+}
 
-export function Input({ style, ...props }: InputProps) {
+export function Input({ style, ref, ...props }: InputProps) {
   const defaultStyles: StyleProp<TextStyle> = {
     borderWidth: 1,
     borderColor: "gray",
@@ -13,8 +15,9 @@ export function Input({ style, ...props }: InputProps) {
 
   return (
     <TextInput
+      ref={ref}
       placeholderTextColor="gray"
-      style={[style, defaultStyles]}
+      style={[defaultStyles, style]}
       {...props}
     />
   );
