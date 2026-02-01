@@ -6,7 +6,10 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={DarkTheme}>
       <TasksProvider>
-        <Stack screenOptions={{ headerShown: false }} />
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          {/* <Stack.Screen name="" options={{ headerShown: false }} /> */}
+        </Stack>
       </TasksProvider>
     </ThemeProvider>
   );

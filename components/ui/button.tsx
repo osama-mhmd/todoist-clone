@@ -1,9 +1,22 @@
-import { Pressable, Text, StyleSheet, ButtonProps } from "react-native";
+import {
+  Pressable,
+  Text,
+  StyleSheet,
+  ButtonProps as BP,
+  StyleProp,
+  ViewStyle,
+  TextStyle,
+} from "react-native";
 
-export function Button({ title, onPress }: ButtonProps) {
+interface ButtonProps extends BP {
+  style?: StyleProp<ViewStyle>;
+  textStyle?: StyleProp<TextStyle>;
+}
+
+export function Button({ title, textStyle, onPress, style }: ButtonProps) {
   return (
-    <Pressable onPress={onPress} style={styles.button}>
-      <Text style={styles.text}>{title}</Text>
+    <Pressable onPress={onPress} style={[styles.button, style]}>
+      <Text style={[styles.text, textStyle]}>{title}</Text>
     </Pressable>
   );
 }

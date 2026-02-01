@@ -40,8 +40,8 @@ export default function Index() {
   return (
     <SafeAreaView
       style={{
-        padding: 20,
-        marginTop: 36,
+        padding: 30,
+        flex: 1,
       }}
     >
       <Text type="title">Today</Text>
@@ -98,7 +98,21 @@ export default function Index() {
           </View>
         </View>
       </Modal>
-      <Button title="Add task" onPress={() => setOpen(true)} />
+      <Button
+        title="+"
+        style={{
+          position: "absolute",
+          borderRadius: 9999999,
+          paddingHorizontal: 24,
+          backgroundColor: "#DC4D3D",
+          bottom: 30,
+          right: 30,
+        }}
+        textStyle={{
+          fontSize: 30,
+        }}
+        onPress={() => setOpen(true)}
+      />
     </SafeAreaView>
   );
 }
