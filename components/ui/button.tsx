@@ -6,6 +6,7 @@ import {
   StyleProp,
   ViewStyle,
   TextStyle,
+  Platform,
 } from "react-native";
 
 interface ButtonProps extends Omit<BP, "title"> {
@@ -25,7 +26,8 @@ export function Button({ title, textStyle, onPress, style }: ButtonProps) {
 const styles = StyleSheet.create({
   button: {
     backgroundColor: "#6366f1",
-    paddingVertical: 12,
+    paddingVertical: Platform.OS == "web" ? 2 : 12,
+    paddingBottom: Platform.OS == "web" ? 14 : 12,
     paddingHorizontal: 20,
     borderRadius: 4,
     alignItems: "center",

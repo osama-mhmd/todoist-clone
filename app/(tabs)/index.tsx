@@ -1,8 +1,8 @@
 import {
   FlatList,
-  InteractionManager,
   Keyboard,
   Modal,
+  Pressable,
   StyleSheet,
   TouchableWithoutFeedback,
   View,
@@ -17,6 +17,7 @@ import { Task } from "@/components/tasks-provider";
 import useTasks from "@/hooks/use-tasks";
 import { Input } from "@/components/ui/input";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import TaskSheet from "@/components/task-sheet";
 
 const today = new Date();
 const weekday = today.toLocaleDateString("en-US", { weekday: "long" });
@@ -47,51 +48,54 @@ export default function Index() {
 
 function TaskItem({ item }: { item: Task }) {
   const [checked, setChecked] = useState<boolean>(false);
+  const [open, setOpen] = useState<boolean>(false);
 
   const handleCheckboxPress = () => {
-    setChecked((prev) => {
-      return !prev;
-    });
+    setChecked((prev) => !prev);
   };
 
   return (
-    <View
-      style={{
-        paddingHorizontal: 4,
-        paddingBottom: 8,
-        borderStyle: "solid",
-        borderBottomWidth: 0.5,
-        borderColor: "#333",
-        marginBottom: 16,
-        display: "flex",
-        flexDirection: "row",
-        gap: 8,
-      }}
-    >
-      <Checkbox
-        value={checked}
-        onValueChange={handleCheckboxPress}
+    <>
+      <View
         style={{
-          borderRadius: "50%",
-          padding: 6,
-          marginTop: 2,
+          paddingHorizontal: 4,
+          paddingBottom: 8,
+          borderStyle: "solid",
+          borderBottomWidth: 0.5,
+          borderColor: "#333",
+          marginBottom: 16,
+          display: "flex",
+          flexDirection: "row",
+          gap: 8,
         }}
-      />
-      <View>
-        <Text
+      >
+        <Checkbox
+          value={checked}
+          onValueChange={handleCheckboxPress}
           style={{
-            textDecorationLine: checked ? "line-through" : "none",
-            color: checked ? "gray" : "white",
+            borderRadius: 50,
+            padding: 6,
+            marginTop: 2,
           }}
-          type="defaultSemiBold"
-        >
-          {item.title}
-        </Text>
-        <Text style={{ color: checked ? "#666" : "#eee" }}>
-          {item.description}
-        </Text>
+        />
+        <Pressable style={{ flex: 1 }} onPress={() => setOpen(true)}>
+          <Text
+            style={{
+              textDecorationLine: checked ? "line-through" : "none",
+              color: checked ? "gray" : "white",
+              fontWeight: "600",
+            }}
+          >
+            {item.title}
+          </Text>
+          <Text style={{ color: checked ? "#666" : "#eee" }}>
+            {item.description}
+          </Text>
+        </Pressable>
       </View>
-    </View>
+
+      <TaskSheet visible={open} onClose={() => setOpen(false)} task={item} />
+    </>
   );
 }
 
