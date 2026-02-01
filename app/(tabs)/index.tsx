@@ -1,4 +1,11 @@
-import { FlatList, InteractionManager, Modal, View } from "react-native";
+import {
+  FlatList,
+  InteractionManager,
+  Keyboard,
+  Modal,
+  TouchableWithoutFeedback,
+  View,
+} from "react-native";
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -25,6 +32,7 @@ export default function Index() {
 
   const changeCurrentTask = useCallback(
     (type: "title" | "description", val: string) => {
+      if (type == "title" && !val.length) return;
       setCurrentTask((prev) => ({
         ...prev,
         [type]: val,
@@ -70,61 +78,72 @@ export default function Index() {
         onRequestClose={() => setOpen(false)}
         onShow={handleModalAppear}
       >
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "flex-end",
+        <TouchableWithoutFeedback
+          onPress={() => {
+            Keyboard.dismiss();
+            setOpen(false);
           }}
         >
           <View
             style={{
-              backgroundColor: "#1e1e1e",
-              paddingStart: 8,
-              paddingTop: 8,
-              borderRadius: 4,
+              flex: 1,
+              justifyContent: "flex-end",
             }}
           >
-            <Input
-              onChangeText={(text) => changeCurrentTask("title", text)}
-              placeholder="Title..."
-              ref={input}
-              style={{
-                borderWidth: 0,
-                fontSize: 20,
-              }}
-            />
-            <Input
-              multiline
-              placeholder="Description..."
-              onChangeText={(text) => changeCurrentTask("description", text)}
-              style={{
-                borderWidth: 0,
-                marginTop: -12,
-              }}
-            />
-            <View
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-between",
-                gap: 4,
-                padding: 8,
-              }}
-            >
-              <View style={{ flex: 1 }}></View>
-              <Button
+            <TouchableWithoutFeedback onPress={(e) => e.stopPropagation()}>
+              <View
                 style={{
-                  backgroundColor: "#DC4D3D",
-                  flex: 0,
-                  paddingHorizontal: 12,
-                  borderRadius: 9999,
+                  backgroundColor: "#1e1e1e",
+                  paddingStart: 8,
+                  paddingTop: 8,
+                  borderRadius: 4,
                 }}
-                title={<FontAwesome size={18} name="arrow-up" />}
-                onPress={addTask}
-              />
-            </View>
+              >
+                <Input
+                  onChangeText={(text) => changeCurrentTask("title", text)}
+                  placeholder="Title..."
+                  ref={input}
+                  style={{
+                    borderWidth: 0,
+                    fontSize: 20,
+                  }}
+                />
+                <Input
+                  multiline
+                  placeholder="Description..."
+                  onChangeText={(text) =>
+                    changeCurrentTask("description", text)
+                  }
+                  style={{
+                    borderWidth: 0,
+                    marginTop: -12,
+                  }}
+                />
+                <View
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    gap: 4,
+                    padding: 8,
+                  }}
+                >
+                  <View style={{ flex: 1 }}></View>
+                  <Button
+                    style={{
+                      backgroundColor: "#DC4D3D",
+                      flex: 0,
+                      paddingHorizontal: 12,
+                      borderRadius: 9999,
+                    }}
+                    title={<FontAwesome size={18} name="arrow-up" />}
+                    onPress={addTask}
+                  />
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
           </View>
-        </View>
+        </TouchableWithoutFeedback>
       </Modal>
       <Button
         title="+"
