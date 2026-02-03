@@ -13,9 +13,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Checkbox } from "expo-checkbox";
 import { useCallback, useRef, useState } from "react";
 import { Task } from "@/components/tasks-provider";
+import { StatusBar } from "expo-status-bar";
+import { Input } from "@/components/ui/input";
 
 import useTasks from "@/hooks/use-tasks";
-import { Input } from "@/components/ui/input";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import TaskSheet from "@/components/task-sheet";
 
@@ -31,8 +32,10 @@ export default function Index() {
       style={{
         padding: 30,
         flex: 1,
+        backgroundColor: "#1F1F1F",
       }}
     >
+      <StatusBar style="light" />
       <Text type="title">Today</Text>
       <Text style={{ marginBottom: 16 }}>
         {month} {today.getDate()} - {weekday}
@@ -210,6 +213,7 @@ function AddTask() {
         style={styles.createButton}
         textStyle={{
           fontSize: 30,
+          fontWeight: 400,
         }}
         onPress={() => setOpen(true)}
       />
@@ -220,9 +224,9 @@ function AddTask() {
 const styles = StyleSheet.create({
   createButton: {
     position: "absolute",
-    borderRadius: 99,
+    borderRadius: 18,
     paddingHorizontal: 24,
-    backgroundColor: "#DC4D3D",
+    backgroundColor: "#D04349",
     bottom: 15,
     right: 15,
   },
